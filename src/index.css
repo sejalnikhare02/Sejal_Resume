@@ -27,3 +27,52 @@ i {
 i:hover {
   color: #f5f5f5;
 }
+
+/* Loader Animation */
+.s {
+  animation: s 1s infinite;
+}
+
+@keyframes s {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+
+.h {
+  animation: h 1s infinite;
+}
+
+@keyframes h {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+
+.n {
+  animation: n 1s infinite;
+}
+
+@keyframes n {
+  0% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
