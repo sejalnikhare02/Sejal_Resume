@@ -8,6 +8,11 @@
   font-family: "Montserrat", sans-serif;
 }
 
+.header h1 {
+  margin: 0;
+  padding: 0 !important;
+}
+
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -75,4 +80,9 @@ i:hover {
   100% {
     opacity: 1;
   }
+}
+
+/* input */
+input {
+  height: 40px;
 }
