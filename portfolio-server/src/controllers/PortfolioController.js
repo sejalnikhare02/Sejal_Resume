@@ -75,8 +75,8 @@ exports.updateAbout = async (req, res) => {
 // ✅ UPDATE experience
 exports.updateExperience = async (req, res) => {
   try {
-    const experience = await Experience.findOneAndUpdate(
-      { _id: req.body._id },
+    const experience = await Experience.findByIdAndUpdate(
+      req.params.id,
       req.body,
       { new: true },
     );
@@ -84,7 +84,7 @@ exports.updateExperience = async (req, res) => {
     res.status(200).send({
       data: experience,
       success: true,
-      message: "Experience Updated Successfully..!",
+      message: "Experience Updated Successfully!",
     });
   } catch (error) {
     res.status(500).send(error);
@@ -103,6 +103,21 @@ exports.addExperience = async (req, res) => {
     });
   } catch (error) {
     res.status(500).send(error);
+  }
+};
+// DELETE experience
+exports.deleteExperience = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await Experience.findByIdAndDelete(id);
+
+    res.status(200).send({
+      success: true,
+      message: "Deleted Successfully",
+    });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
   }
 };
 

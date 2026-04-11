@@ -53,7 +53,7 @@ const experienceSchema = new mongoose.Schema(
       required: true,
     },
     period: {
-      type: [String],
+      type: String,
       required: true,
     },
     company: {
