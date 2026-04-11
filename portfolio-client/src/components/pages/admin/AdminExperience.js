@@ -1,11 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { Form, Input, Button, DatePicker, message } from "antd";
+import React, { useState } from "react";
+import {
+  Form,
+  Input,
+  Button,
+  DatePicker,
+  Modal,
+  message,
+  Popconfirm,
+} from "antd";
 import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { HideLoading, showLoading } from "../../../redux/rootSlice";
+import {
+  getPortfolioData,
+  HideLoading,
+  showLoading,
+} from "../../../redux/rootSlice";
 
-const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
 const AdminExperience = () => {
@@ -13,74 +24,101 @@ const AdminExperience = () => {
   const dispatch = useDispatch();
 
   const [form] = Form.useForm();
+
+  const [showModal, setShowModal] = useState(false);
+  const [mode, setMode] = useState("add"); // add | edit
+  const [selectedItem, setSelectedItem] = useState(null);
   const [isPresent, setIsPresent] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(null);
 
-  // 🔥 SET FORM WHEN SELECTING EXISTING EXPERIENCE
-  const handleEdit = (exp, index) => {
-    setSelectedIndex(index);
+  // ✅ OPEN ADD MODAL
+  const handleAdd = () => {
+    setMode("add");
+    setSelectedItem(null);
+    form.resetFields();
+    setIsPresent(false);
+    setShowModal(true);
+  };
 
-    let start, end;
+  // ✅ OPEN EDIT MODAL
+  const handleEdit = (exp) => {
+    setMode("edit");
+    setSelectedItem(exp);
 
-    if (typeof exp.period === "string") {
+    let start = "";
+    let end = "";
+
+    // ✅ Handle string OR array safely
+    if (Array.isArray(exp.period)) {
+      [start, end] = exp.period[0].split(" - ");
+    } else if (typeof exp.period === "string") {
       [start, end] = exp.period.split(" - ");
-    } else {
-      [start, end] = exp.period;
     }
 
     form.setFieldsValue({
-      ...exp,
-      period: [
-        dayjs(start, "MMM YYYY"),
-        end === "Present" ? dayjs() : dayjs(end, "MMM YYYY"),
-      ],
+      title: exp.title,
+      company: exp.company,
+      description: exp.description,
+      startYear: start,
+      endYear: end === "Present" ? "" : end,
     });
 
     setIsPresent(end === "Present");
+    setShowModal(true);
   };
 
-  // 🔥 SUBMIT
-  const onFinish = async (values) => {
-    const [start, end] = values.period;
+  // ✅ DELETE
+  const handleDelete = async (exp) => {
+    try {
+      dispatch(showLoading());
 
+      const res = await axios.delete(
+        `/api/portfolio/delete-experience/${exp._id}`,
+      );
+
+      dispatch(HideLoading());
+
+      if (res.data.success) {
+        message.success(res.data.message);
+        dispatch(getPortfolioData());
+      } else {
+        message.error(res.data.message);
+      }
+    } catch (error) {
+      dispatch(HideLoading());
+      message.error(error.message);
+    }
+  };
+
+  // ✅ SUBMIT (ADD / UPDATE)
+  const onFinish = async (values) => {
     const finalData = {
       ...values,
-      period: `${start.format("MMM YYYY")} - ${
-        isPresent ? "Present" : end.format("MMM YYYY")
-      }`,
+      period: `${values.startYear} - ${isPresent ? "Present" : values.endYear}`,
     };
 
     try {
       dispatch(showLoading());
 
-      let response;
+      let res;
 
-      if (selectedIndex !== null) {
-        // UPDATE
-        const selectedExp = portfolioData.experience[selectedIndex];
-
-        response = await axios.post("/api/portfolio/update-experience", {
-          ...finalData,
-          _id: selectedExp._id,
-        });
+      if (mode === "edit") {
+        res = await axios.put(
+          `/api/portfolio/update-experience/${selectedItem._id}`,
+          finalData,
+        );
       } else {
-        // ADD
-        response = await axios.post("/api/portfolio/add-experience", finalData);
+        res = await axios.post("/api/portfolio/add-experience", finalData);
       }
 
       dispatch(HideLoading());
 
-      if (response.data.success) {
-        message.success(response.data.message);
-
+      if (res.data.success) {
+        message.success(res.data.message);
+        setShowModal(false);
         form.resetFields();
-        setSelectedIndex(null);
-        setIsPresent(false);
-
-        // 🔥 refresh data (IMPORTANT)
-        window.location.reload(); // simple way
+        dispatch(getPortfolioData());
       } else {
-        message.error(response.data.message);
+        message.error(res.data.message);
       }
     } catch (error) {
       dispatch(HideLoading());
@@ -89,117 +127,117 @@ const AdminExperience = () => {
   };
 
   return (
-    <div className="p-6  rounded-lg">
-      {/* 🔥 ADD BUTTON */}
+    <div className="p-6">
+      {/* ✅ ADD BUTTON */}
       <div className="flex justify-end mb-4">
-        <Button
-          onClick={() => {
-            setSelectedIndex(null);
-            form.resetFields();
-            setIsPresent(false);
-          }}
-          className="bg-green-600 text-white"
-        >
-          + Add New Experience
+        <Button onClick={handleAdd} className="bg-green-600 text-white">
+          + Add Experience
         </Button>
       </div>
 
-      {/* 🔥 EXPERIENCE LIST */}
-      <div className="mb-6 ">
-        <h2 className=" text-lg mb-2">Your Experiences</h2>
+      {/* ✅ CARD UI */}
+      <div className="grid grid-cols-3 sm:grid-cols-1  gap-4">
+        {portfolioData?.experience?.map((exp) => (
+          <div key={exp._id} className="bg-white p-4 rounded shadow">
+            <h3 className="font-bold text-lg">{exp.period}</h3>
 
-        <div className="grid grid-cols-2 sm:grid-cols-1 gap-2">
-          {portfolioData?.experience?.map((exp, index) => (
-            <div
-              key={exp._id}
-              onClick={() => handleEdit(exp, index)}
-              className={`p-3 rounded cursor-pointer border ${
-                selectedIndex === index
-                  ? "bg-tertiary text-white"
-                  : "bg-gray-800 text-gray-300"
-              }`}
-            >
-              {exp.title} @ {exp.company}
+            <p>
+              <b>Company:</b> {exp.company}
+            </p>
+
+            <p>
+              <b>Role:</b> {exp.title}
+            </p>
+
+            <p className="text-sm mt-2">{exp.description}</p>
+
+            {/* ACTION BUTTONS */}
+            <div className="flex justify-end gap-2 mt-4">
+              <Popconfirm
+                title="Are you sure to delete?"
+                onConfirm={() => handleDelete(exp)}
+              >
+                <Button danger>Delete</Button>
+              </Popconfirm>
+
+              <Button onClick={() => handleEdit(exp)}>Edit</Button>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
-      {/* 🔥 FORM */}
-      <Form layout="vertical" form={form} onFinish={onFinish}>
-        {/* Title + Company */}
-        <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
-          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-            <Input placeholder="Software Engineer" />
-          </Form.Item>
+      {/* ✅ MODAL */}
+      <Modal
+        title={mode === "add" ? "Add Experience" : "Edit Experience"}
+        open={showModal}
+        onCancel={() => setShowModal(false)}
+        footer={null}
+        className="sm:max-w-full "
+      >
+        <Form layout="vertical" form={form} onFinish={onFinish}>
+          {/* TITLE + COMPANY */}
+          <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
+            <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
 
+            <Form.Item
+              name="company"
+              label="Company"
+              rules={[{ required: true }]}
+            >
+              <Input />
+            </Form.Item>
+          </div>
+
+          {/* CURRENTLY WORKING */}
+          <div className="flex items-center gap-2 mb-2">
+            <input
+              type="checkbox"
+              checked={isPresent}
+              onChange={(e) => {
+                setIsPresent(e.target.checked);
+              }}
+            />
+            <span>Currently Working Here</span>
+          </div>
+
+          {/* DATE */}
+          <div className="grid grid-cols-2 gap-4">
+            <Form.Item
+              name="startYear"
+              label="Start Year"
+              rules={[{ required: true }]}
+            >
+              <Input placeholder="2021" />
+            </Form.Item>
+
+            <Form.Item
+              name="endYear"
+              label="End Year"
+              rules={[{ required: !isPresent }]}
+            >
+              <Input placeholder="2023 or Present" disabled={isPresent} />
+            </Form.Item>
+          </div>
+
+          {/* DESCRIPTION */}
           <Form.Item
-            name="company"
-            label="Company"
+            name="description"
+            label="Description"
             rules={[{ required: true }]}
           >
-            <Input placeholder="Company Name" />
+            <TextArea rows={4} />
           </Form.Item>
-        </div>
 
-        {/* Checkbox */}
-        <div className="flex items-center gap-2 mt-2 mb-2">
-          <input
-            type="checkbox"
-            checked={isPresent}
-            onChange={(e) => {
-              const checked = e.target.checked;
-              setIsPresent(checked);
-
-              const current = form.getFieldValue("period");
-
-              if (checked && current && current[0]) {
-                form.setFieldsValue({
-                  period: [current[0], dayjs()],
-                });
-              }
-            }}
-          />
-          <span className=" text-sm">Currently Working Here</span>
-        </div>
-
-        {/* Period */}
-        <Form.Item name="period" label="Period" rules={[{ required: true }]}>
-          <RangePicker
-            picker="month"
-            className="w-full"
-            format="MMM YYYY"
-            disabledDate={(current) =>
-              current && current > dayjs().endOf("month")
-            }
-            onCalendarChange={(dates) => {
-              if (isPresent && dates && dates[0]) {
-                form.setFieldsValue({
-                  period: [dates[0], dayjs()],
-                });
-              }
-            }}
-          />
-        </Form.Item>
-
-        {/* Description */}
-        <Form.Item
-          name="description"
-          label="Description"
-          rules={[{ required: true }]}
-        >
-          <TextArea rows={4} />
-        </Form.Item>
-
-        {/* Submit */}
-        <Form.Item>
-          <div className="flex justify-end sm:justify-center">
+          {/* SUBMIT */}
+          <div className="flex justify-end">
             <Button type="primary" htmlType="submit">
-              Save
+              {mode === "add" ? "Add" : "Update"}
             </Button>
           </div>
-        </Form.Item>
-      </Form>
+        </Form>
+      </Modal>
     </div>
   );
 };
