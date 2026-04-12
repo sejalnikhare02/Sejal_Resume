@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Form, Input, Button, Modal, message, Popconfirm } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -42,9 +42,9 @@ const AdminProject = () => {
     try {
       dispatch(showLoading());
 
-      const res = await axios.post("/api/portfolio/delete-project", {
-        _id: proj._id,
-      });
+      const res = await axios.delete(
+        `/api/portfolio/delete-project/${proj._id}`,
+      );
 
       dispatch(HideLoading());
 
@@ -118,9 +118,8 @@ const AdminProject = () => {
                   <Player
                     autoplay
                     loop
-                    // src={proj.lottie}
-                    src="https://assets2.lottiefiles.com/packages/lf20_tfb3estd.json"
-                    className={proj.size}
+                    src={proj.lottie}
+                    style={{ width: "300px", height: "300px" }}
                   />
                 </div>
               )}
@@ -182,7 +181,7 @@ const AdminProject = () => {
             </Form.Item>
 
             <Form.Item
-              name="lottieURL"
+              name="lottie"
               label="Image URL"
               rules={[{ required: true }]}
             >
