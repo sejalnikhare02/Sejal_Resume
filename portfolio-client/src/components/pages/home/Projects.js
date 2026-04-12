@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import SectionTitle from "../../SectionTitle";
 import { useSelector } from "react-redux";
 import { Player } from "@lottiefiles/react-lottie-player";
@@ -8,8 +8,16 @@ const Projects = () => {
   const { portfolioData } = useSelector((state) => state.root);
 
   const projects = portfolioData?.project || [];
-  const selectedProject = projects[selectedItemIndex];
 
+  // ✅ Sort latest first
+  const sortedProjects = useMemo(() => {
+    return [...projects].sort((a, b) => {
+      return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+    });
+  }, [projects]);
+
+  // selected project
+  const selectedProject = sortedProjects[selectedItemIndex];
   return (
     <div>
       <SectionTitle title="Projects" />
@@ -17,7 +25,7 @@ const Projects = () => {
       <div className="flex py-10 gap-16 sm:flex-col">
         {/* LEFT SIDE */}
         <div className="flex flex-col gap-6 border-l-2 border-[#135e4c82]  sm:flex-row sm:overflow-x-auto sm:w-full">
-          {projects.map((proj, index) => (
+          {sortedProjects.map((proj, index) => (
             <div
               key={proj._id}
               onClick={() => setSelectedItemIndex(index)}
@@ -66,7 +74,6 @@ const Projects = () => {
             </div>
           </div>
         )}
-          
       </div>
     </div>
   );

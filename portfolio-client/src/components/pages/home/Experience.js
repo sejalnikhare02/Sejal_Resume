@@ -20,7 +20,7 @@ const Experience = () => {
 
       <div className="flex py-10 gap-20 sm:flex-col">
         {/* ✅ LEFT TIMELINE */}
-        <div className="flex flex-col gap-20 border-l-2 border-[#135e4c82] w-4/5 sm:flex-row sm:overflow-x-scroll sm:w-full">
+        <div className="flex flex-col gap-10 border-l-2 border-[#135e4c82] w-2/5 sm:flex-row sm:overflow-x-scroll sm:w-full">
           {sortedExperience.map((exp, index) => (
             <div
               key={exp._id}
