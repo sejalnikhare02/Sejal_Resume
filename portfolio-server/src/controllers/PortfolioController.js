@@ -154,7 +154,7 @@ exports.updateProject = async (req, res) => {
 };
 exports.deleteProject = async (req, res) => {
   try {
-    await Project.findByIdAndDelete(req.body._id);
+    await Project.findByIdAndDelete(req.params.id);
 
     res.status(200).send({
       success: true,

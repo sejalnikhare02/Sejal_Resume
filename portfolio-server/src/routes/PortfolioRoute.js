@@ -25,7 +25,7 @@ router.delete("/delete-experience/:id", deleteExperience);
 
 router.post("/add-project", addProject);
 router.post("/update-project", updateProject);
-router.delete("/delete-project", deleteProject);
+router.delete("/delete-project/:id", deleteProject);
 
 router.post("/update-contact", updateContact);
 module.exports = router;

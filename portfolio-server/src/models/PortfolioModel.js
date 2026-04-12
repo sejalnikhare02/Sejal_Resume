@@ -78,10 +78,10 @@ const projectSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    lottieURL: {
-      type: String,
-      required: true,
-    },
+   lottie: {
+  type: String,
+  required: true,
+},
     link: {
       type: String,
       required: false,
