@@ -7,14 +7,13 @@ const Projects = () => {
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const { portfolioData } = useSelector((state) => state.root);
 
-  const projects = portfolioData?.project || [];
-
-  // ✅ Sort latest first
   const sortedProjects = useMemo(() => {
+    const projects = portfolioData?.project || [];
+
     return [...projects].sort((a, b) => {
       return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
     });
-  }, [projects]);
+  }, [portfolioData]);
 
   // selected project
   const selectedProject = sortedProjects[selectedItemIndex];
