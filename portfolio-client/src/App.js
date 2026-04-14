@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router";
 import Home from "./components/pages/home/Index";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Loader from "./components/Loader";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +15,9 @@ function App() {
   const getPortfolioData = async () => {
     try {
       dispatch(showLoading());
-      const response = await axios.get("/api/portfolio/get-portfolio-data");
+      const response = await axios.get(
+        process.env.REACT_APP_BASE_URL + "/api/portfolio/get-portfolio-data",
+      );
       dispatch(setPortfolioData(response.data));
       dispatch(HideLoading());
     } catch (error) {
