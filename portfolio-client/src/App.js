@@ -12,24 +12,24 @@ function App() {
   const { loading, portfolioData } = useSelector((state) => state.root);
   const dispatch = useDispatch();
 
-  const getPortfolioData = async () => {
-    try {
-      dispatch(showLoading());
-      const response = await axios.get(
-        process.env.REACT_APP_BASE_URL + "/api/portfolio/get-portfolio-data",
-      );
-      dispatch(setPortfolioData(response.data));
-      dispatch(HideLoading());
-    } catch (error) {
-      dispatch(HideLoading());
-    }
-  };
-
   useEffect(() => {
+    const getPortfolioData = async () => {
+      try {
+        dispatch(showLoading());
+        const response = await axios.get(
+          process.env.REACT_APP_BASE_URL + "/api/portfolio/get-portfolio-data",
+        );
+        dispatch(setPortfolioData(response.data));
+        dispatch(HideLoading());
+      } catch (error) {
+        dispatch(HideLoading());
+      }
+    };
+
     if (!portfolioData) {
       getPortfolioData();
     }
-  }, [portfolioData]);
+  }, [portfolioData, dispatch]);
 
   return (
     <>
