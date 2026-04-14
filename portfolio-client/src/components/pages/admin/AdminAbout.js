@@ -1,6 +1,4 @@
-import React, { useState } from "react";
-import { Form, Input, Button, Upload, Select, message } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Form, Input, Button, Select, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { HideLoading, showLoading } from "../../../redux/rootSlice";
 import axios from "axios";
@@ -12,13 +10,8 @@ const AdminAbout = () => {
   const dispatch = useDispatch();
 
   const [form] = Form.useForm();
-  const [file, setFile] = useState(null);
 
   const onFinish = async (values) => {
-    const finalData = {
-      ...values,
-      lottieURL: values.lottieURL || file || portfolioData?.about?.lottieURL,
-    };
     try {
       dispatch(showLoading());
       const response = await axios.post("/api/portfolio/update-about", {
