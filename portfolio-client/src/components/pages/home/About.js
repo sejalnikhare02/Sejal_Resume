@@ -3,7 +3,7 @@ import SectionTitle from "../../SectionTitle";
 import { useSelector } from "react-redux";
 
 const About = () => {
-  const { loading, portfolioData } = useSelector((state) => state.root);
+  const { portfolioData } = useSelector((state) => state.root);
   const { about } = portfolioData;
   const { skills, lottieURL, description1, description2 } = about;
 
