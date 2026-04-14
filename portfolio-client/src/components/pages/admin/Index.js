@@ -83,7 +83,13 @@ const Admin = () => {
           {/* Right */}
           <div className="flex items-center gap-3">
             {/* <span className="text-white hidden sm:block">Admin</span> */}
-            <button className="bg-tertiary px-3 py-1 rounded text-white text-sm">
+            <button
+              className="bg-tertiary px-3 py-1 rounded text-white text-sm"
+              onClick={() => {
+                localStorage.removeItem("token");
+                window.location.href = "/admin-login";
+              }}
+            >
               Logout
             </button>
           </div>

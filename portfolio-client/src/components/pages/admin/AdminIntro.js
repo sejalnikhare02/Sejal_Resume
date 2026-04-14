@@ -1,7 +1,7 @@
 import { Form, Input, Button, Select, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { HideLoading, showLoading } from "../../../redux/rootSlice";
-import axios from "axios";
+import axios from "./axiosInstance";
 
 const { Option } = Select;
 

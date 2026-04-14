@@ -5,6 +5,9 @@ const {
   Project,
   Contact,
 } = require("../models/PortfolioModel");
+const User = require("../models/UserModel");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 // ✅ GET ALL DATA
 exports.getPortfolioData = async (req, res) => {
@@ -176,6 +179,43 @@ exports.updateContact = async (req, res) => {
       success: true,
       message: "Contact Updated Successfully!",
       data: contact,
+    });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+exports.adminloginUser = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(401).send({
+        success: false,
+        message: "Invalid username",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).send({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET || "secret123",
+      { expiresIn: "1d" },
+    );
+
+    res.send({
+      success: true,
+      message: "Login successful",
+      data: token,
     });
   } catch (error) {
     res.status(500).send(error);

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Form, Input, Button, Select, message } from "antd";
 import { HideLoading, showLoading } from "../../../redux/rootSlice";
-import axios from "axios";
+import axios from "./axiosInstance";
 import { useDispatch, useSelector } from "react-redux";
 
 const AdminContact = () => {

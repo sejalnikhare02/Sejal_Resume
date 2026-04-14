@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Form, Input, Button, Modal, message, Popconfirm } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+// import axios from "axios";
 import {
   HideLoading,
   showLoading,
   getPortfolioData,
 } from "../../../redux/rootSlice";
 import { Player } from "@lottiefiles/react-lottie-player";
+import axios from "./axiosInstance";
 
 const { TextArea } = Input;
 

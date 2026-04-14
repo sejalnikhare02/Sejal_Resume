@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Form, Input, Button, Modal, message, Popconfirm } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+import axios from "./axiosInstance";
 import {
   getPortfolioData,
   HideLoading,

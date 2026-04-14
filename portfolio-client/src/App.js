@@ -7,6 +7,8 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { HideLoading, setPortfolioData, showLoading } from "./redux/rootSlice";
 import Admin from "./components/pages/admin/Index";
+import AdminLogin from "./components/pages/admin/AdminLogin";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const { loading, portfolioData } = useSelector((state) => state.root);
@@ -37,7 +39,16 @@ function App() {
         {loading ? <Loader /> : null}
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>
