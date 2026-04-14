@@ -35,7 +35,7 @@ const AdminLogin = () => {
         <input
           type="text"
           placeholder="Username"
-          className="p-2 rounded bg-gray-400 text-white"
+          className="p-2 rounded bg-gray-200 text-black"
           value={form.username}
           onChange={(e) => setForm({ ...form, username: e.target.value })}
         />
@@ -43,7 +43,7 @@ const AdminLogin = () => {
         <input
           type="password"
           placeholder="Password"
-          className="p-2 rounded bg-gray-400 text-white"
+          className="p-2 rounded bg-gray-200 text-black"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
